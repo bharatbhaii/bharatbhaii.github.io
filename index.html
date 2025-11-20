@@ -34,7 +34,7 @@
 
     <script>
         // --- ACTION REQUIRED: REPLACE WITH YOUR WRITE API KEY ---
-        const writeApiKey = "Z39BBNNMNBUYY8SP"; 
+        const writeApiKey = "YOUR_WRITE_API_KEY"; 
         // ------------------------------------------------------
 
         function updateText() {
@@ -42,6 +42,9 @@
             const priority = document.getElementById('priority').value;
             const statusElement = document.getElementById('status');
             
+            // Generate a random ID (1 to 10000) to make every request unique
+            const uniqueID = Math.floor(Math.random() * 10000) + 1;
+
             if (!message) {
                 statusElement.textContent = "Error: Please enter a message.";
                 statusElement.style.color = "red";
@@ -51,8 +54,8 @@
             statusElement.textContent = "Sending...";
             statusElement.style.color = "orange";
 
-            // Send Message to Field 1 AND Priority to Field 2
-            const url = `https://api.thingspeak.com/update?api_key=${writeApiKey}&field1=${encodeURIComponent(message)}&field2=${priority}`;
+            // Send Message (Field 1), Priority (Field 2), AND Unique ID (Field 3)
+            const url = `https://api.thingspeak.com/update?api_key=${writeApiKey}&field1=${encodeURIComponent(message)}&field2=${priority}&field3=${uniqueID}`;
 
             fetch(url, { method: 'POST' })
                 .then(response => response.text())
@@ -73,4 +76,3 @@
     </script>
 </body>
 </html>
-
