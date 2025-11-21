@@ -14,7 +14,8 @@
             box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
             text-align: center; 
             width: 320px; 
-            color: #333 !important; 
+            /* Default color, but allows overrides */
+            color: #000; 
         }
 
         input[type="text"], select { width: 90%; padding: 10px; margin-bottom: 1rem; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; }
@@ -62,13 +63,13 @@
     </audio>
 
     <script>
-        // --- ACTION REQUIRED: FILL KEYS ---
+        // --- KEYS ---
         const writeApiKey = "Z39BBNNMNBUYY8SP"; 
         const channelID = "3172147"; 
         const readApiKey = "P8TAL1X6R6I6QTDA";
-        // ----------------------------------
+        // ------------
 
-        let manualStop = false; // Logic flag to prevent re-triggering
+        let manualStop = false; 
 
         function sendMessage() {
             const msg = document.getElementById('lcdMessage').value;
@@ -79,8 +80,9 @@
             if (!msg) { statusEl.innerText = "Enter a message!"; return; }
             statusEl.innerText = "Sending...";
             
-            document.getElementById('deviceStatus').innerText = "Sending...";
-            
+            document.getElementById('deviceStatus').innerText = "Waiting for device...";
+            document.getElementById('deviceStatus').style.color = "gray";
+
             const url = `https://api.thingspeak.com/update?api_key=${writeApiKey}&field1=${encodeURIComponent(msg)}&field2=${prio}&field3=${id}&field4=Sent`;
 
             fetch(url, { method: 'POST' }).then(r => r.text()).then(d => {
@@ -89,7 +91,7 @@
         }
 
         function acknowledgeSOS() {
-            manualStop = true; // Prevent browser from re-triggering SOS
+            manualStop = true; 
             stopSOS();
             document.getElementById('status').innerText = "Replying...";
             
@@ -100,7 +102,7 @@
             fetch(url, { method: 'POST' }).then(() => {
                  document.getElementById('status').innerText = "Reply Sent!";
                  document.getElementById('deviceStatus').innerText = "Responded to SOS";
-                 document.getElementById('deviceStatus').style.color = "green";
+                 document.getElementById('deviceStatus').style.color = "blue";
             });
         }
 
@@ -115,10 +117,9 @@
                         disp.innerText = "✅ Message Acknowledged!";
                         disp.style.color = "green";
                         stopSOS();
-                        manualStop = false; // Reset flag
+                        manualStop = false; 
                     } 
                     else if (cleanStatus === "SOS") {
-                        // Only trigger if we haven't manually stopped it recently
                         if (!manualStop) {
                             disp.innerText = "🚨 SOS RECEIVED! 🚨";
                             disp.style.color = "red";
@@ -132,22 +133,21 @@
                          disp.innerText = "Device: SOS Reply Received";
                          disp.style.color = "blue";
                          stopSOS();
-                         manualStop = false; // Reset flag logic
+                         manualStop = false; 
                     } 
                     else {
                         if(cleanStatus !== "Sent") {
                              disp.innerText = cleanStatus;
                              disp.style.color = "black";
                         }
-                        // If status is anything other than SOS, we can clear the manual stop
                         manualStop = false;
                         stopSOS();
                     }
                 });
-        }, 6000); // Increased to 6s to be safer with rate limits
+        }, 6000); 
 
         function triggerSOS() {
-            if(document.body.classList.contains('sos-mode')) return; // Already active
+            if(document.body.classList.contains('sos-mode')) return; 
             document.body.classList.add('sos-mode');
             document.getElementById('mainBox').classList.add('sos-container');
             document.getElementById('ackBtn').style.display = "block";
